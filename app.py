@@ -166,4 +166,5 @@ def update_bar_graph(x_var, y_var, factor, agg_mode):
 
     return fig
 
-app.run_server(debug=True, use_reloader=False)  # Turn off reloader if inside Jupyter
+if __name__ == '__main__':
+    app.run_server(debug=True)  # Turn off reloader if inside Jupyter
