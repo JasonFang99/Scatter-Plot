@@ -1,10 +1,11 @@
 import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html, Input, Output, callback
-from vars import *
+# from vars import *
 import plotly.express as px
+import pandas as pd
 from app_secrets import *
-from tools import *
-from callbacks import *
+# from tools import *
+# from callbacks import *
 import requests
 import re
 
@@ -53,7 +54,7 @@ app.layout = dbc.Container(
                     html.Label('X variable'),
                     dcc.Dropdown(
                         id='scatter_x_var',
-                        options=[{'label':md[i]['flatlabel'],'value':i} for i in scatter_plot_x_vars],
+                        options=[i for i in scatter_plot_x_vars],
                         value=scatter_plot_x_vars[0],
                         multi=False
                     )
@@ -65,7 +66,7 @@ app.layout = dbc.Container(
                     html.Label('Y variable'),
                     dcc.Dropdown(
                         id='scatter_y_var',
-                        options=[{'label':md[i]['flatlabel'],'value':i} for i in scatter_plot_y_vars],
+                        options=[i for i in scatter_plot_y_vars],
                         value=scatter_plot_y_vars[0],
                         multi=False
                     )
@@ -78,7 +79,7 @@ app.layout = dbc.Container(
                     html.Label('Factor'),
                     dcc.Dropdown(
                         id='scatter_factor',
-                        options=[{'label':md[i]['flatlabel'],'value':i} for i in scatter_plot_factors],
+                        options=[i for i in scatter_plot_factors],
                         value=scatter_plot_factors[0],
                         multi=False
                     )
@@ -104,6 +105,18 @@ app.layout = dbc.Container(
     ]
 )
 
+def update_df(url,data):
+	global headers
+	r=requests.post(url,data=data,headers=headers)
+	j=r.text
+	
+	try:
+		results_count=r.headers['results_count']
+	except:
+		results_count=None
+	df=pd.read_json(j)
+	return df,results_count
+
 @callback(
     Output('bar-graph', 'figure'),
     Input('scatter_x_var', 'value'),
@@ -112,7 +125,7 @@ app.layout = dbc.Container(
     Input('scatter_agg_mode', 'value')
 )
 def update_bar_graph(x_var, y_var, factor, agg_mode):
-    global md
+    # global md
 
     data={
         'selected_fields':[x_var, y_var, factor],
@@ -124,8 +137,8 @@ def update_bar_graph(x_var, y_var, factor, agg_mode):
     df, results_count=update_df(base_url+'voyage/caches', data=data)
 
 
-    yvarlabel=md[y_var]['flatlabel']
-    xvarlabel=md[x_var]['flatlabel']
+    # yvarlabel=md[y_var]['flatlabel']
+    # xvarlabel=md[x_var]['flatlabel']
 
 
     colors=df[factor].unique()
@@ -142,10 +155,10 @@ def update_bar_graph(x_var, y_var, factor, agg_mode):
         df2=df2.reset_index()
 
     fig = px.scatter(df2, x=x_var, y=y_var, color=factor,
-        labels={
-            y_var:yvarlabel,
-			x_var:xvarlabel
-            }
+        # labels={
+        #     y_var:yvarlabel,
+		# 	x_var:xvarlabel
+        #     }
         )
 
 
