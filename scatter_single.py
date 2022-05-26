@@ -1,12 +1,12 @@
 import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html, Input, Output, callback
 from vars import *
+import requests
+import re
 import plotly.express as px
 from app_secrets import *
 from tools import *
 from callbacks import *
-import requests
-import re
 
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP],suppress_callback_exceptions=True)
 server = app.server
